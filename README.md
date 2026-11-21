@@ -31,6 +31,7 @@ Add to your MCP config (`claude_desktop_config.json` or `.cursor/mcp.json`):
 
 ## Video Walkthrough & Ecosystem Links
 - **1080p HD Walkthrough (YouTube `@storepolicycheck`):** https://youtu.be/P1ZFbBqXJH8
+- **Official X / Twitter (`@StorePolicyHQ`):** https://x.com/StorePolicyHQ
 - **Official Zero-Login Web Scanner (15 Rules):** https://storepolicycheck.com
 - **2026 8-Tool Comparison Matrix:** https://storepolicycheck.com/compare/shopify-gmc-audit-tools
 - **GMC Red-Banner Error-Code Glossary:** https://storepolicycheck.com/gmc-errors
