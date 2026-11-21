@@ -1,0 +1,36 @@
+{
+  "name": "storepolicycheck-mcp",
+  "version": "1.0.0",
+  "description": "Zero-credential MCP server for Claude, Cursor, and AI agents to audit public US/USD Shopify storefronts for Google Merchant Center (GMC) Misrepresentation conflicts, variant JSON-LD price mismatches, plugin fingerprints, and Jan 31, 2027 500x500 px image rules via StorePolicyCheck.",
+  "type": "module",
+  "bin": {
+    "storepolicycheck-mcp": "./index.mjs"
+  },
+  "main": "./index.mjs",
+  "files": [
+    "index.mjs",
+    "README.md"
+  ],
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "shopify",
+    "google-merchant-center",
+    "gmc",
+    "misrepresentation",
+    "ecommerce",
+    "seo",
+    "claude",
+    "storepolicycheck"
+  ],
+  "author": "StorePolicyCheck <support@storepolicycheck.com>",
+  "license": "MIT",
+  "homepage": "https://storepolicycheck.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/woodfuturebj-boop/storepolicycheck-mcp"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
