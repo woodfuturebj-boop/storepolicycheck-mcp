@@ -28,3 +28,10 @@ Add to your MCP config (`claude_desktop_config.json` or `.cursor/mcp.json`):
 - **Free**: All 4 standalone diagnostic tools + full preview showing up to 2 verbatim conflict pairs (`$0` if zero hard conflicts exist).
 - **$29 one-time pass** (optional, per store, 14 days, no subscription): Unlocks all conflicts, copy-paste Shopify policy patches, GMC backend settings mirror table, and 5 automated before-and-after verification re-scans.
 - Independent tool not affiliated with Google LLC or Shopify Inc. OpenAPI spec: `https://storepolicycheck.com/openapi.json`.
+
+## Video Walkthrough & Ecosystem Links
+- **1080p HD Walkthrough (YouTube `@storepolicycheck`):** https://youtu.be/P1ZFbBqXJH8
+- **Official Zero-Login Web Scanner (15 Rules):** https://storepolicycheck.com
+- **2026 8-Tool Comparison Matrix:** https://storepolicycheck.com/compare/shopify-gmc-audit-tools
+- **GMC Red-Banner Error-Code Glossary:** https://storepolicycheck.com/gmc-errors
+- **中文出海卖家免绑后台自检全攻略 (GitHub):** https://github.com/woodfuturebj-boop/shopify-gmc-shensu-zicha-2026
