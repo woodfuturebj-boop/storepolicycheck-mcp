@@ -1,0 +1,39 @@
+1
+00:00:00,000 --> 00:00:10,300
+Before you click Request Review inside Google Merchant Center and risk a seven day appeal cooldown, run a read only storefront audit on StorePolicyCheck dot com.
+
+2
+00:00:10,300 --> 00:00:26,975
+Paste any public US Shopify store URL. With zero Shopify Admin login and zero app installation, our fifteen rule engine cross checks your homepage announcement bar, shipping policy, refund policy, contact details, and prohibited medical claims in thirty seconds.
+
+3
+00:00:27,125 --> 00:00:33,638
+Second, prepare for Google Merchant Center's January thirty first, twenty twenty seven image enforcement.
+
+4
+00:00:33,638 --> 00:00:50,238
+Non apparel product photos below five hundred by five hundred pixels face automatic disapproval. Our free bulk image checker inspects up to two hundred and fifty public Shopify products in ten seconds and exports every failing SKU and image URL to a one click CSV file.
+
+5
+00:00:50,388 --> 00:00:54,019
+Third, eliminate Mismatched value page crawl price errors.
+
+6
+00:00:54,019 --> 00:01:11,713
+Paste any Shopify variant URL into our free Variant Price and Schema Checker. It compares the live shopper buy box price against every Offer inside your ProductGroup JSON LD to the exact cent, and detects bundle, subscription, or currency switcher widgets causing crawler price drift.
+
+7
+00:01:11,863 --> 00:01:15,939
+Fourth, use our free fifteen point Pre Appeal Readiness Checklist.
+
+8
+00:01:15,939 --> 00:01:30,180
+It separates nine public storefront blockers from six private Google Merchant Center backend checks, including business identity verification, shipping rate tables, and live US checkout parity, with a printable verification receipt.
+
+9
+00:01:30,330 --> 00:01:47,271
+Unlike monthly Shopify compliance apps, StorePolicyCheck reveals up to two verbatim conflicts free, stays completely zero dollars if your store is clean, and offers a twenty nine dollar one time pass with turnkey policy patches and five post edit re scans only when needed.
+
+10
+00:01:47,271 --> 00:01:51,217
+Run your free pre review check today at StorePolicyCheck dot com.
