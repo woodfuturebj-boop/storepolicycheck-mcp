@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * StorePolicyCheck MCP Server (Zero-Credential Public Read-Only Shopify GMC Verifier)
+ * StorePolicyCheck MCP Server v2.0.0 (Zero-Credential Multi-Market Shopify GMC Verifier)
  * Protocol: Model Context Protocol (JSON-RPC 2.0 over stdio)
  * Docs: https://storepolicycheck.com/openapi.json
  */
@@ -15,20 +15,57 @@ const TOOLS = [
   {
     name: 'audit_shopify_store_gmc',
     description:
-      'Run a zero-credential, read-only 15-rule Shopify US/USD storefront audit for Google Merchant Center (GMC) Misrepresentation triggers (cross-page shipping/return contradictions, variant JSON-LD price parity, plugin fingerprints, prohibited claims, and 500x500 images). Returns a clickable report link with free preview findings.',
+      'Run a zero-credential, read-only 22-rule Shopify storefront audit across US, UK, EU, CA & AU for Google Merchant Center (GMC) Misrepresentation triggers (cross-page shipping/return contradictions, UK/EU 14-day statutory return minimums, /cart/add.js sneak fees, DNS MX email deliverability, ICANN RDAP domain age, virtual-office addresses, variant JSON-LD price parity, and 500x500 images).',
     inputSchema: {
       type: 'object',
       required: ['storeUrl'],
       properties: {
         storeUrl: {
           type: 'string',
-          description: 'Public Shopify storefront or product URL (e.g., https://example-store.com)',
+          description: 'Public Shopify storefront or product URL (US, UK, EU, CA, or AU)',
         },
         stage: {
           type: 'string',
           enum: ['pre_launch', 'warning', 'suspended', 'item_disapproved'],
           description: 'Current GMC review stage (defaults to suspended)',
         },
+      },
+    },
+  },
+  {
+    name: 'check_gmc_feed_vs_storefront',
+    description:
+      'Compare a Google Merchant Center TSV, CSV, or XML product feed against a live public Shopify storefront catalog to detect price mismatches, out-of-stock drift, 404 dead handles, and GTIN errors.',
+    inputSchema: {
+      type: 'object',
+      required: ['storeUrl', 'feedContent'],
+      properties: {
+        storeUrl: { type: 'string', description: 'Public Shopify store domain or URL' },
+        feedContent: { type: 'string', description: 'Raw TSV, CSV, or Google Shopping XML feed text' },
+      },
+    },
+  },
+  {
+    name: 'check_shopify_entity_email_and_cart_trust',
+    description:
+      'Audit shell-company & checkout trust triggers: DNS MX support email deliverability, ICANN RDAP domain age vs. founding claims, shared virtual-office addresses (30 N Gould St, 8 The Green, 71-75 Shelton St), cross-page street address conflicts, and /cart/add.js auto-injected sneak fees.',
+    inputSchema: {
+      type: 'object',
+      required: ['storeUrl'],
+      properties: {
+        storeUrl: { type: 'string', description: 'Public Shopify storefront domain or URL' },
+      },
+    },
+  },
+  {
+    name: 'check_shopify_gmc_catalog_hygiene',
+    description:
+      'Scan up to 250 public Shopify SKUs for GMC title promotional spam (FREE SHIPPING, ALL-CAPS), storewide perpetual strikethrough sales, 0g shipping weights, and GTIN/identifier_exists hygiene.',
+    inputSchema: {
+      type: 'object',
+      required: ['storeUrl'],
+      properties: {
+        storeUrl: { type: 'string', description: 'Public Shopify storefront domain or URL' },
       },
     },
   },
@@ -40,17 +77,14 @@ const TOOLS = [
       type: 'object',
       required: ['storeUrl'],
       properties: {
-        storeUrl: {
-          type: 'string',
-          description: 'Public Shopify store domain or URL',
-        },
+        storeUrl: { type: 'string', description: 'Public Shopify store domain or URL' },
       },
     },
   },
   {
     name: 'check_shopify_variant_jsonld_price',
     description:
-      'Compare a Shopify product ?variant= visible buy-box price against ProductGroup/Offer JSON-LD schema and fingerprint conflicting bundle/subscription/currency plugins.',
+      'Compare a Shopify product ?variant= visible buy-box price against ProductGroup/Offer JSON-LD schema across USD, GBP, EUR, CAD & AUD, and fingerprint conflicting bundle/subscription/currency plugins.',
     inputSchema: {
       type: 'object',
       required: ['productUrl'],
@@ -70,10 +104,7 @@ const TOOLS = [
       type: 'object',
       required: ['storeUrl'],
       properties: {
-        storeUrl: {
-          type: 'string',
-          description: 'Public Shopify storefront domain or URL',
-        },
+        storeUrl: { type: 'string', description: 'Public Shopify storefront domain or URL' },
       },
     },
   },
@@ -84,7 +115,7 @@ async function callApi(endpoint, payload) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'User-Agent': 'storepolicycheck-mcp/1.0.0',
+      'User-Agent': 'storepolicycheck-mcp/2.0.0',
     },
     body: JSON.stringify(payload),
   });
@@ -112,18 +143,20 @@ async function executeTool(name, args) {
       referrer: 'https://npmjs.com/package/storepolicycheck-mcp',
     });
     const reportRes = await fetch(`${BASE_URL}/api/scan/${scan.operatorToken}`, {
-      headers: { 'User-Agent': 'storepolicycheck-mcp/1.0.0' },
+      headers: { 'User-Agent': 'storepolicycheck-mcp/2.0.0' },
     });
     const report = reportRes.ok ? await reportRes.json() : null;
     const reportUrl = `${BASE_URL}/report/${scan.operatorToken}`;
     return {
       reportUrl,
       shareUrl: `${BASE_URL}/share/${scan.shareToken}`,
+      market: report?.market || 'US',
+      currency: report?.currency || 'USD',
       supportStatus: report?.supportStatus || 'unknown',
       counts: report?.counts || null,
       freePreviewFindings: (report?.findings || [])
         .filter((f) => f.isFreePreviewUnlocked || f.state === 'needs_confirmation')
-        .slice(0, 5)
+        .slice(0, 6)
         .map((f) => ({
           ruleCode: f.ruleCode,
           state: f.state,
@@ -132,7 +165,38 @@ async function executeTool(name, args) {
           secondaryEvidence: f.secondaryEvidence?.quote || null,
         })),
       nextStep:
-        'Open reportUrl to inspect verbatim quotes, copy-paste Shopify policy patches, GMC settings mirror table, and 5 automated post-edit verification re-scans.',
+        'Open reportUrl to inspect verbatim quotes, 5-country policy & 3PL patches, drop-in Shopify Liquid ProductGroup code, GMC Supplemental Feed TSV auto-cleaning, Appeal Evidence log, and 5 post-edit re-scans.',
+    };
+  }
+
+  if (name === 'check_gmc_feed_vs_storefront') {
+    const data = await callApi('/api/tools/feed-parity-check', {
+      inputUrl: String(args?.storeUrl || '').trim(),
+      feedContent: String(args?.feedContent || '').trim(),
+    });
+    return {
+      ...data,
+      webToolUrl: `${BASE_URL}/tools/gmc-feed-vs-storefront-matcher?utm_source=storepolicycheck-mcp`,
+    };
+  }
+
+  if (name === 'check_shopify_entity_email_and_cart_trust') {
+    const data = await callApi('/api/tools/trust-check', {
+      inputUrl: String(args?.storeUrl || '').trim(),
+    });
+    return {
+      ...data,
+      webToolUrl: `${BASE_URL}/tools/shopify-trust-email-address-checker?utm_source=storepolicycheck-mcp`,
+    };
+  }
+
+  if (name === 'check_shopify_gmc_catalog_hygiene') {
+    const data = await callApi('/api/tools/catalog-hygiene-check', {
+      inputUrl: String(args?.storeUrl || '').trim(),
+    });
+    return {
+      ...data,
+      webToolUrl: `${BASE_URL}/tools/gmc-product-title-gtin-cleaner?utm_source=storepolicycheck-mcp`,
     };
   }
 
@@ -199,7 +263,7 @@ rl.on('line', async (line) => {
         capabilities: { tools: {} },
         serverInfo: {
           name: 'storepolicycheck-mcp',
-          version: '1.0.0',
+          version: '2.0.0',
         },
       },
     });
